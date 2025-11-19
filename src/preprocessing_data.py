@@ -3,13 +3,11 @@ import os
 import io
 from functools import reduce
 
-# =============================================================================
+
 # 1. CONFIGURATION AND PATHS
-# =============================================================================
+
 print("--- STARTING DATA PREPARATION SCRIPT (PRODUCTION VERSION) ---")
 
-# --- USER-SPECIFIC DIRECTORY PATHS ---
-# These paths are based on your folder structure (SDG8, SDG10, SDG13 subfolders)
 PATH_SDG8  = '/Users/eanzallo/Desktop/M1/data science/Project_Datascience/data/SDG8'
 PATH_SDG10 = '/Users/eanzallo/Desktop/M1/data science/Project_Datascience/data/SDG10'
 PATH_SDG13 = '/Users/eanzallo/Desktop/M1/data science/Project_Datascience/data/SDG13'
@@ -24,18 +22,16 @@ TARGET_COUNTRIES = [
 ]
 
 list_of_dataframes = []
-# -----------------------------------------------------------------------------
 
-# =============================================================================
-# 2. LOAD COMPLEX SWITZERLAND GHG EMISSIONS (Robust Text Parsing)
-# =============================================================================
+# 2. LOAD SWITZERLAND GHG EMISSIONS 
+
 try:
     print("\n1. Loading Switzerland GHG Data...")
     filename_swiss_ghg = 'Switzerland_greenhouse_gas_emissions.csv'
     path_swiss_ghg = os.path.join(PATH_SDG13, filename_swiss_ghg)
     
     if os.path.exists(path_swiss_ghg):
-        # 1. Read file as text to dynamically find the correct header row index
+        # 1. Read file as text to find the correct header row index
         with open(path_swiss_ghg, 'r', encoding='latin-1', errors='ignore') as f:
             lines = f.readlines()
         
@@ -71,9 +67,8 @@ try:
 except Exception as e:
     print(f"   -> ERROR: Crash loading Switzerland GHG data: {e}")
 
-# =============================================================================
-# 3. LOAD EUROSTAT AND UNECE DATA (Standardized Loading and Filtering)
-# =============================================================================
+# 3. LOAD EUROSTAT AND UNECE DATA 
+
 print("\n2. Loading Eurostat & UNECE Data...")
 
 file_config = {
@@ -83,7 +78,7 @@ file_config = {
     'sdg_10_41_income_distribution.csv':      ('Income_Inequality', PATH_SDG10),
     'sdg_10_50_Income_share_of_the_bottom_40%_of_the_population.csv': ('Income_Share_Bottom_40', PATH_SDG10),
     'Greenhouse_gas_emissions_by_source_sector.csv': ('GHG_Emissions_EU', PATH_SDG13),
-    'UNECE_Renewable_Energy_Data.csv':        ('Renewable_Energy_Share', PATH_SDG13) # Final, clean source
+    'UNECE_Renewable_Energy_Data.csv':        ('Renewable_Energy_Share', PATH_SDG13) 
 }
 
 for filename, (variable_name, folder_path) in file_config.items():
@@ -115,7 +110,7 @@ for filename, (variable_name, folder_path) in file_config.items():
                 # Eurostat Standard Mapping
                 df_temp = df_temp.rename(columns={'geo': 'Country', 'time_period': 'Year', 'obs_value': variable_name})
                 
-                # --- FIX DUPLICATES: Sex and Age Filtering ---
+                # Sex and Age Filtering 
                 if 'sex' in df_temp.columns:
                     vals = df_temp['sex'].unique()
                     if 't' in vals: df_temp = df_temp[df_temp['sex'] == 't']
@@ -124,11 +119,11 @@ for filename, (variable_name, folder_path) in file_config.items():
                 if 'age' in df_temp.columns:
                     vals_age = df_temp['age'].unique()
                     
-                    # NEET Rate: Prioritize 15-29 (Standard definition)
+                    # NEET Rate: Prioritize 15-29 
                     if variable_name == 'NEET_Rate' and 'y1529' in vals_age:
                         df_temp = df_temp[df_temp['age'] == 'y1529']
                         
-                    # Employment Rate: Prioritize 20-64 (Standard EU target group)
+                    # Employment Rate: Prioritize 20-64 
                     elif variable_name == 'Employment_Rate':
                         if 'y2064' in vals_age: df_temp = df_temp[df_temp['age'] == 'y2064']
                         elif 'y1564' in vals_age: df_temp = df_temp[df_temp['age'] == 'y1564']
@@ -139,7 +134,7 @@ for filename, (variable_name, folder_path) in file_config.items():
                 print(f"   -> FORMAT ERROR: {filename} (Columns are missing or misnamed.)")
                 continue
             
-            # Final Aggregation (Safety net against any remaining duplicates)
+            # Final Aggregation 
             df_clean = df_clean[df_clean['Country'].isin(TARGET_COUNTRIES)]
             if df_clean.duplicated(subset=['Country', 'Year']).any():
                 df_clean = df_clean.groupby(['Country', 'Year'])[variable_name].mean().reset_index()
@@ -153,9 +148,8 @@ for filename, (variable_name, folder_path) in file_config.items():
     else:
         print(f"   -> MISSING: {filename}")
 
-# =============================================================================
 # 4. FINAL MERGE, HARMONIZATION, AND EXPORT
-# =============================================================================
+
 print("\n3. Finalizing Data...")
 
 if list_of_dataframes:
