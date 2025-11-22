@@ -27,54 +27,56 @@ print("\n--- Descriptive Statistics ---")
 print(df[numeric_cols].describe().T)
 
 
-# 3. EVOLUTION TABLE (START vs END)
+# 3. EVOLUTION & CONVERGENCE TABLE (MEAN + STD DEV)
 
 print("\n--- Computing Evolution Table ---")
 
 start_year = df['Year'].min()
 end_year = df['Year'].max()
 
-# Calculate means for the start and end years
-start_means = df[df['Year'] == start_year][numeric_cols].mean()
-end_means = df[df['Year'] == end_year][numeric_cols].mean()
+# Calculate Mean and Standard Deviation for start and end years
+stats_start = df[df['Year'] == start_year][numeric_cols].agg(['mean', 'std']).T
+stats_end = df[df['Year'] == end_year][numeric_cols].agg(['mean', 'std']).T
 
-# Count number of available countries for each period
-n_countries_start = df[df['Year'] == start_year]['Country'].nunique()
-n_countries_end = df[df['Year'] == end_year]['Country'].nunique()
+# Rename columns for clarity
+stats_start.columns = [f'Mean {start_year}', f'Std {start_year}']
+stats_end.columns = [f'Mean {end_year}', f'Std {end_year}']
 
-# Create a summary DataFrame
-summary = pd.DataFrame({
-    f'Mean {start_year} ({n_countries_start} countries)': start_means,
-    f'Mean {end_year} ({n_countries_end} countries)': end_means
-})
+# Combine into a single DataFrame
+summary = pd.concat([stats_start, stats_end], axis=1)
 
-col_start = f'Mean {start_year} ({n_countries_start} countries)'
-col_end = f'Mean {end_year} ({n_countries_end} countries)'
+# Calculate Evolution of the Mean (%)
+summary['Mean Change (%)'] = ((summary[f'Mean {end_year}'] - summary[f'Mean {start_year}']) / summary[f'Mean {start_year}']) * 100
 
-# Calculate percentage change
-summary['Change (%)'] = ((summary[col_end] - summary[col_start]) / summary[col_start]) * 100
+# Reorder columns for better readability
+cols_order = [f'Mean {start_year}', f'Std {start_year}', f'Mean {end_year}', f'Std {end_year}', 'Mean Change (%)']
+summary = summary[cols_order]
 
 print(summary.round(2))
 
 # Save table as an image
 summary_graph = summary.round(2)
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(15, 6))
 plt.axis('off')
+
+# Define column widths
+widths = [0.15] * 5 
 
 table = plt.table(
     cellText=summary_graph.values,
     rowLabels=summary_graph.index,
     colLabels=summary_graph.columns,
     cellLoc='center', loc='center',
-    colWidths=[0.3, 0.3, 0.2]
+    colWidths=widths
 )
 
 table.auto_set_font_size(False)
 table.set_fontsize(10)
 table.scale(1.2, 2)
 
-plt.title(f"Average Evolution ({start_year} - {end_year})", fontsize=14, weight='bold', pad=20)
-plt.savefig("evolution_table.png", bbox_inches='tight', dpi=300)
-print("Image saved: evolution_table.png")
+plt.title(f"Evolution of Means and Disparities ({start_year} - {end_year})", fontsize=14, weight='bold', pad=20)
+plt.savefig("evolution_table_detailed.png", bbox_inches='tight', dpi=300)
+print("Image saved: evolution_table_detailed.png")
 
+      
