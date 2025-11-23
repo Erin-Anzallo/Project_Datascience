@@ -83,4 +83,70 @@ plt.title(f"Evolution of Means and Disparities ({start_year} - {end_year})", fon
 plt.savefig("evolution_table_detailed.png", bbox_inches='tight', dpi=300)
 print("Image saved: evolution_table_detailed.png")
 
-      
+
+# 4. TREND CHARTS BY SDG
+
+print("\nGenerating Charts by SDG :")
+
+# aggregate data by year to get the European average
+# standard deviation to visualize the disparity between countries
+annual_means = df.groupby('Year')[numeric_cols].mean()
+annual_std = df.groupby('Year')[numeric_cols].std()
+
+def plot_indicators(indicators, title, filename):
+    
+    n_cols = len(indicators)
+    fig, axes = plt.subplots(1, n_cols, figsize=(6 * n_cols, 5))
+    fig.suptitle(title, fontsize=16, weight='bold')
+    
+    # Handle the case where there is only one chart (axes is not a list)
+    if n_cols == 1:
+        axes = [axes]
+
+    colors = ['green', 'orange', 'blue', 'red']
+    
+    # Define the X-axis range: from the first to the last year, with a step of 3.
+    min_year = int(annual_means.index.min())
+    max_year = int(annual_means.index.max())
+    years_ticks = range(min_year, max_year + 1, 3) # Step of 3 (2005, 2008, 2011...)
+    
+    for i, col in enumerate(indicators):
+        ax = axes[i]
+        color = colors[i % len(colors)]
+        
+        # 1. Plot the Mean Line 
+        sns.lineplot(data=annual_means, x=annual_means.index, y=col, ax=ax, 
+                     color=color, linewidth=3, marker='o')
+        
+        # 2. Plot the Standard Deviation 
+        # The shaded area shows how spread out the countries are around the mean
+        ax.fill_between(annual_means.index, 
+                        annual_means[col] - annual_std[col], 
+                        annual_means[col] + annual_std[col], 
+                        color=color, alpha=0.15, label='Std Dev (Disparity)')
+        
+        # Clean up titles (remove underscores from column names)
+        ax.set_title(col.replace('_', ' '), fontsize=12, weight='bold')
+        ax.set_xlabel('Year')
+        
+        # Apply the 3-year step to the X-axis for better readability
+        ax.set_xticks(years_ticks)
+        
+        ax.grid(True, linestyle='--', alpha=0.7)
+        ax.legend()
+    
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.savefig(filename, dpi=300)
+    print(f"Image saved: {filename}")
+
+# SDG 8: Focus on Economic Growth and Employment
+indicators_sdg8 = ['Real_GDP_Per_Capita', 'NEET_Rate', 'Unemployment_Rate']
+plot_indicators(indicators_sdg8, "SDG 8: Decent Work and Economic Growth", "evolution_sdg8.png")
+
+# SDG 10: Focus on Inequalities
+indicators_sdg10 = ['Income_Distribution_Ratio', 'Income_Share_Bottom_40']
+plot_indicators(indicators_sdg10, "SDG 10: Reduced Inequalities", "evolution_sdg10.png")
+
+# SDG 13: Focus on Climate Transition
+indicators_sdg13 = ['Renewable_Energy_Share', 'GHG_Emissions']
+plot_indicators(indicators_sdg13, "SDG 13: Climate Action", "evolution_sdg13.png")
