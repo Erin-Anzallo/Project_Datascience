@@ -23,33 +23,37 @@ numeric_cols = [col for col in df.columns if col not in ['Country', 'Year']]
 
 # 2. DESCRIPTIVE STATISTICS
 
-print("\n--- Descriptive Statistics ---")
+print("\nDescriptive Statistics :")
 print(df[numeric_cols].describe().T)
 
 
 # 3. EVOLUTION & CONVERGENCE TABLE (MEAN + STD DEV)
 
-print("\n--- Computing Evolution Table ---")
+print("\nComputing Evolution Table :")
 
 start_year = df['Year'].min()
 end_year = df['Year'].max()
+
+# Count number of countries available for start and end years
+n_countries_start = df[df['Year'] == start_year]['Country'].nunique()
+n_countries_end = df[df['Year'] == end_year]['Country'].nunique()
 
 # Calculate Mean and Standard Deviation for start and end years
 stats_start = df[df['Year'] == start_year][numeric_cols].agg(['mean', 'std']).T
 stats_end = df[df['Year'] == end_year][numeric_cols].agg(['mean', 'std']).T
 
 # Rename columns for clarity
-stats_start.columns = [f'Mean {start_year}', f'Std {start_year}']
-stats_end.columns = [f'Mean {end_year}', f'Std {end_year}']
+stats_start.columns = [f'Mean {start_year} ({n_countries_start} countries)', f'Std {start_year}']
+stats_end.columns = [f'Mean {end_year} ({n_countries_end} countries)', f'Std {end_year}']
 
 # Combine into a single DataFrame
 summary = pd.concat([stats_start, stats_end], axis=1)
 
 # Calculate Evolution of the Mean (%)
-summary['Mean Change (%)'] = ((summary[f'Mean {end_year}'] - summary[f'Mean {start_year}']) / summary[f'Mean {start_year}']) * 100
+summary['Mean Change (%)'] = ((summary[f'Mean {end_year} ({n_countries_end} countries)'] - summary[f'Mean {start_year} ({n_countries_start} countries)']) / summary[f'Mean {start_year} ({n_countries_start} countries)']) * 100
 
 # Reorder columns for better readability
-cols_order = [f'Mean {start_year}', f'Std {start_year}', f'Mean {end_year}', f'Std {end_year}', 'Mean Change (%)']
+cols_order = [f'Mean {start_year} ({n_countries_start} countries)', f'Std {start_year}', f'Mean {end_year} ({n_countries_end} countries)', f'Std {end_year}', 'Mean Change (%)']
 summary = summary[cols_order]
 
 print(summary.round(2))
