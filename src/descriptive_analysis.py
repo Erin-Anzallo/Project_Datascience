@@ -150,3 +150,36 @@ plot_indicators(indicators_sdg10, "SDG 10: Reduced Inequalities", "evolution_sdg
 # SDG 13: Focus on Climate Transition
 indicators_sdg13 = ['Renewable_Energy_Share', 'GHG_Emissions']
 plot_indicators(indicators_sdg13, "SDG 13: Climate Action", "evolution_sdg13.png")
+
+
+
+# 5. CORRELATION MATRIX
+
+print("\nGenerating Correlation Matrix :")
+
+# Create a heatmap to identify relationships between different goals 
+# For example: Does economic growth (GDP) naturally reduce unemployment? Or does it increase emissions? 
+
+plt.figure(figsize=(10, 8))
+
+# Compute the Pearson correlation matrix to compare every indicator against the others
+# It measures the linear relationship: +1 means they increase together (strong positive relationship)
+# -1 means they move in opposite directions (strong negative relationship), and the diagonal is always 1.0 (self-correlation)
+corr_matrix = df[numeric_cols].corr()
+
+# Create the heatmap
+sns.heatmap(corr_matrix, 
+            annot=True,       # Write the exact coefficient in each cell
+            cmap='coolwarm',  # Red = positive correlation, Blue = negative, White = neutral
+            fmt=".2f",        # Round to 2 decimal places for readability
+            linewidths=0.5)   # Add white lines between cells to make it cleaner
+
+plt.title("Correlation Matrix of SDG Indicators", fontsize=14)
+plt.tight_layout() # Adjust layout to make sure labels are not cut off
+
+# save the image
+plt.savefig("correlation_matrix.png", dpi=300)
+print("Image saved: correlation_matrix.png")
+
+plt.show()
+print("Analysis completed")
