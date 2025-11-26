@@ -80,7 +80,7 @@ table.set_fontsize(10)
 table.scale(1.2, 2)
 
 plt.title(f"Evolution of Means and Disparities ({start_year} - {end_year})", fontsize=14, weight='bold', pad=20)
-plt.savefig("evolution_table_detailed.png", bbox_inches='tight', dpi=300)
+plt.savefig("results/descriptive_analysis_plot/evolution_table_detailed.png", bbox_inches='tight', dpi=300)
 print("Image saved: evolution_table_detailed.png")
 
 
@@ -136,7 +136,7 @@ def plot_indicators(indicators, title, filename):
         ax.legend()
     
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.savefig(filename, dpi=300)
+    plt.savefig("results/descriptive_analysis_plot", filename, dpi=300)
     print(f"Image saved: {filename}")
 
 # SDG 8: Focus on Economic Growth and Employment
@@ -178,8 +178,9 @@ plt.title("Correlation Matrix of SDG Indicators", fontsize=14)
 plt.tight_layout() # Adjust layout to make sure labels are not cut off
 
 # save the image
-plt.savefig("correlation_matrix.png", dpi=300)
+plt.savefig("results/descriptive_analysis_plot/correlation_matrix.png", dpi=300)
 print("Image saved: correlation_matrix.png")
 
 plt.show()
 print("Analysis completed")
+
