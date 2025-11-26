@@ -1,21 +1,26 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 # Set the visual style for the plots
 sns.set_theme(style="whitegrid")
 
+# Robust path configuration 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)
 
 # 1. LOAD DATA
-
-file_path = "/Users/eanzallo/Desktop/M1/data science/Project_Datascience/data/Final_Cleaned_Database.csv"
+file_path = os.path.join(project_root, "data", "Final_Cleaned_Database.csv")
 
 try:
     df = pd.read_csv(file_path)
     print(f"Data loaded successfully. Rows: {len(df)}")
 except FileNotFoundError:
     print(f"Error: File not found at {file_path}")
-    exit()
+
+output_dir = os.path.join(project_root, "results", "descriptive_analysis_plot")
+os.makedirs(output_dir, exist_ok=True)
 
 # Select numeric columns for analysis
 numeric_cols = [col for col in df.columns if col not in ['Country', 'Year']]
@@ -80,7 +85,7 @@ table.set_fontsize(10)
 table.scale(1.2, 2)
 
 plt.title(f"Evolution of Means and Disparities ({start_year} - {end_year})", fontsize=14, weight='bold', pad=20)
-plt.savefig("results/descriptive_analysis_plot/evolution_table_detailed.png", bbox_inches='tight', dpi=300)
+plt.savefig(f"{output_dir}/evolution_table_detailed.png", bbox_inches='tight', dpi=300)
 print("Image saved: evolution_table_detailed.png")
 
 
@@ -136,7 +141,7 @@ def plot_indicators(indicators, title, filename):
         ax.legend()
     
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.savefig(f"results/descriptive_analysis_plot/{filename}", dpi=300)
+    plt.savefig(f"{output_dir}/{filename}", dpi=300)
     print(f"Image saved: {filename}")
 
 # SDG 8: Focus on Economic Growth and Employment
@@ -178,7 +183,7 @@ plt.title("Correlation Matrix of SDG Indicators", fontsize=14)
 plt.tight_layout() # Adjust layout to make sure labels are not cut off
 
 # save the image
-plt.savefig("results/descriptive_analysis_plot/correlation_matrix.png", dpi=300)
+plt.savefig(f"{output_dir}/correlation_matrix.png", dpi=300)
 print("Image saved: correlation_matrix.png")
 
 plt.show()
