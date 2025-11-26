@@ -34,7 +34,7 @@ print(f"Training Period: 2005 - {CUTOFF_YEAR}")
 print(f"Testing Period: {CUTOFF_YEAR + 1} - 2022")
 
 # I create a directory to save the charts
-output_dir = "validation_charts"
+output_dir = "results/model_validation_plot"
 os.makedirs(output_dir, exist_ok=True)
 print(f"Output directory '{output_dir}' created")
 
@@ -143,7 +143,7 @@ summary_errors.columns = ['Indicator', 'Average Error (MAE)']
 units_map = {
     'Real_GDP_Per_Capita': '€',
     'GHG_Emissions': 'Tonnes CO2',
-    'Income_Distribution_Ratio': 'Ratio',
+    'Income_Distribution_Ratio': 'S80/S20 Ratio',
     'Income_Share_Bottom_40': '% pts',
     'NEET_Rate': '% pts',
     'Unemployment_Rate': '% pts',
