@@ -136,7 +136,7 @@ def plot_indicators(indicators, title, filename):
         ax.legend()
     
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.savefig("results/descriptive_analysis_plot", filename, dpi=300)
+    plt.savefig(f"results/descriptive_analysis_plot/{filename}", dpi=300)
     print(f"Image saved: {filename}")
 
 # SDG 8: Focus on Economic Growth and Employment
@@ -183,4 +183,3 @@ print("Image saved: correlation_matrix.png")
 
 plt.show()
 print("Analysis completed")
-
