@@ -50,6 +50,7 @@ feature_selection_map = {
 # 5: I start the forecasting process 
 print("\nStarting forecast to 2030 for all countries...")
 all_forecasts = []
+all_graph_data = [] # I create a list to store all the data points for the graphs
 countries = df['Country'].unique()
 
 # I create a specific directory for the trend graphs
@@ -158,6 +159,25 @@ for country in countries:
     plt.savefig(filename, dpi=150)
     plt.close(fig)
 
+    # I prepare the data for the graph data export 
+    # I merge the historical data with the full forecast data
+    historical_data_long = df_country.melt(id_vars=['Country', 'Year'], value_vars=numeric_cols, var_name='Indicator', value_name='Actual_Value')
+    
+    # The forecast_df contains predictions from 2022 to 2030. 
+    full_trend_df = pd.DataFrame()
+    for col in numeric_cols:
+        model_info = models[col]
+        historical_fit_input = df_country[model_info['features']] if col == 'GHG_Emissions' else train_data[model_info['features']]
+        historical_fit = model_info['model'].predict(historical_fit_input)
+        full_trend = np.concatenate([historical_fit, forecast_df[col].iloc[1:].values])
+        full_years = np.concatenate([historical_fit_input['Year'].values, forecast_df['Year'].iloc[1:].values])
+        temp_df = pd.DataFrame({'Country': country, 'Year': full_years, 'Indicator': col, 'Forecast_Value': full_trend})
+        full_trend_df = pd.concat([full_trend_df, temp_df])
+
+    # I merge historical and forecast data
+    graph_data_country = pd.merge(historical_data_long, full_trend_df, on=['Country', 'Year', 'Indicator'], how='outer')
+    all_graph_data.append(graph_data_country)
+
     prediction_2030 = forecast_df[forecast_df['Year'] == 2030].iloc[0]
     
     for col in numeric_cols:
@@ -232,4 +252,9 @@ output_dir = os.path.join(project_root, "results", "forecast_2030")
 os.makedirs(output_dir, exist_ok=True)
 pivot_df.round(2).to_csv(os.path.join(output_dir, "forecast_2030_values.csv"))
 status_df.to_csv(os.path.join(output_dir, "forecast_2030_status.csv"))
+
+# I combine and save the graph data from all countries into one file
+final_graph_data_df = pd.concat(all_graph_data, ignore_index=True)
+final_graph_data_df.to_csv(os.path.join(output_dir, "graph_forecast_data.csv"), index=False)
+
 print(f"\nResults saved in '{output_dir}'")
