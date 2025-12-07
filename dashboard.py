@@ -44,9 +44,10 @@ TARGETS_2030 = {
     'Renewable_Energy_Share': {'value': 42.5, 'goal': 'higher_is_better'},
     'GHG_Emissions': {'value': None, 'goal': 'lower_is_better'}
 }
+
 # --- 2. INITIALISATION DE L'APPLICATION DASH ---
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.MINTY])
+app = Dash(__name__, external_stylesheets=[dbc.themes.ZEPHYR])
 app.title = "Socio-Economic Forecasts 2030"
 
 # --- 3. DÉFINITION DE LA MISE EN PAGE (LAYOUT) ---
@@ -257,7 +258,7 @@ def update_map(selected_indicator):
         # Pour les indicateurs à 2 états, on ne montrera que les légendes pertinentes
         if df_2030['Category'].nunique() < 3:
             legend_labels = [legend_labels[0], legend_labels[2]] # Garde "🟢 Good Trend" et "🔴 Bad Trend"
-            colors = [colors[0], colors[2]]
+            colors = ['green', 'red']
 
     # Création de la carte avec une seule trace
     fig = go.Figure(go.Choropleth(
