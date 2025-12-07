@@ -97,7 +97,6 @@ app.layout = dbc.Container(fluid=True, className="p-4", children=[
                 dcc.Dropdown(
                     id='country-dropdown',
                     options=[{'label': country, 'value': country} for country in countries],
-                    value=countries[0],
                 ),
                 dcc.Graph(id='indicator-graphs', style={'height': '65vh'}),
             ]), className="h-100")
@@ -368,6 +367,15 @@ def update_graphs(selected_country_from_dropdown, map_click_data, selected_indic
     # Filter the DataFrame for the selected country and indicator
     filtered_df = df[(df['Country'] == selected_country) & (df['Indicator'] == selected_indicator)]
 
+    # Si le dataframe filtré est vide, retourner une figure vide.
+    if filtered_df.empty:
+        return go.Figure(layout={"title": f"No data available for {selected_indicator} in {selected_country}"})
+
+    # Calculer la plage de l'axe Y avec une marge de 10% pour éviter que la courbe ne soit coupée
+    min_val = min(filtered_df['Actual_Value'].min(), filtered_df['Forecast_Value'].min())
+    max_val = max(filtered_df['Actual_Value'].max(), filtered_df['Forecast_Value'].max())
+    padding = (max_val - min_val) * 0.2
+
     # Create a simple figure
     fig = go.Figure()
 
@@ -384,8 +392,17 @@ def update_graphs(selected_country_from_dropdown, map_click_data, selected_indic
             title="Year",
             dtick=5  # Afficher une graduation tous les 5 ans
         ),
-        yaxis_title="Value",
-        legend_title="Legend",
+        yaxis=dict(
+            title="Value",
+            range=[min_val - padding, max_val + padding] # Appliquer la plage calculée
+        ),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=0.01,
+            xanchor="center",
+            x=0.5
+        ),
         template="plotly_white"
     )
 
