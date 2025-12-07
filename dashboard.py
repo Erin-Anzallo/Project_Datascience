@@ -90,10 +90,13 @@ app.layout = dbc.Container(fluid=True, className="p-4", children=[
                         placeholder="2. Select an Indicator",
                     ),
                 ], style={'display': 'flex', 'flexDirection': 'column', 'gap': '10px', 'marginBottom': '20px'}),
-                dcc.Graph(
-                    id='europe-map',
-                    style={'height': '65vh'},
-                    config={'scrollZoom': False, 'displayModeBar': False}
+                dcc.Loading(
+                    type="default",
+                    children=dcc.Graph(
+                        id='europe-map',
+                        style={'height': '65vh'},
+                        config={'scrollZoom': False, 'displayModeBar': False}
+                    )
                 ),
                 html.Div(id='map-legend', className="text-center mt-3"),
             ]), className="h-100")
@@ -108,7 +111,10 @@ app.layout = dbc.Container(fluid=True, className="p-4", children=[
                     id='country-dropdown',
                     options=[{'label': country, 'value': country} for country in countries],
                 ),
-                dcc.Graph(id='indicator-graphs', style={'height': '65vh'}),
+                dcc.Loading(
+                    type="default",
+                    children=dcc.Graph(id='indicator-graphs', style={'height': '65vh'})
+                ),
             ]), className="h-100")
         ], id='graph-column', width=5, style={'display': 'none'}), # La colonne du graphique est masquée par défaut
     ])
