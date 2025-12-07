@@ -34,6 +34,16 @@ indicator_groups = {
     "SDG 13: Climate Action": [ind for ind in ['GHG_Emissions', 'Renewable_Energy_Share'] if ind in indicators]
 }
 
+# Définir les cibles et les règles métier comme une constante globale pour éviter la redondance
+TARGETS_2030 = {
+    'Real_GDP_Per_Capita': {'value': None, 'goal': 'higher_is_better'},
+    'NEET_Rate': {'value': 9.0, 'goal': 'lower_is_better'},
+    'Unemployment_Rate': {'value': 5.0, 'goal': 'lower_is_better'},
+    'Income_Distribution_Ratio': {'value': None, 'goal': 'lower_is_better'},
+    'Income_Share_Bottom_40': {'value': None, 'goal': 'higher_is_better'},
+    'Renewable_Energy_Share': {'value': 42.5, 'goal': 'higher_is_better'},
+    'GHG_Emissions': {'value': None, 'goal': 'lower_is_better'}
+}
 # --- 2. INITIALISATION DE L'APPLICATION DASH ---
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.MINTY])
@@ -199,6 +209,7 @@ def update_map(selected_indicator):
         last_value = last_value_series.iloc[0]
 
         target_info = targets_2030[indicator]
+        target_info = TARGETS_2030[indicator]
         
         # Logique pour les indicateurs avec une cible chiffrée
         if target_info['value'] is not None:
@@ -228,6 +239,7 @@ def update_map(selected_indicator):
     # Définir les couleurs et les étiquettes de légende
     colors = ['green', 'orange', 'red']
     target_info = targets_2030[selected_indicator]
+    target_info = TARGETS_2030[selected_indicator]
     
     # Définir les étiquettes de légende en fonction de la logique de l'indicateur
     if target_info['value'] is not None:
@@ -292,6 +304,7 @@ def update_legend(selected_indicator):
         'GHG_Emissions': {'value': None, 'goal': 'lower_is_better'}
     }
     target_info = targets_2030[selected_indicator]
+    target_info = TARGETS_2030[selected_indicator]
 
     if target_info['value'] is not None:
         text_labels = [f"Target Met (≤ {target_info['value']})" if target_info['goal'] == 'lower_is_better' else f"Target Met (≥ {target_info['value']})", "Improving Trend", "Worsening Trend"]
@@ -371,6 +384,9 @@ def update_graphs(selected_country_from_dropdown, map_click_data, selected_indic
     if filtered_df.empty:
         return go.Figure(layout={"title": f"No data available for {selected_indicator} in {selected_country}"})
 
+    # Trouver la dernière année avec des données historiques pour marquer le début de la prévision
+    last_historical_year = filtered_df.dropna(subset=['Actual_Value'])['Year'].max()
+
     # Calculer la plage de l'axe Y avec une marge de 10% pour éviter que la courbe ne soit coupée
     min_val = min(filtered_df['Actual_Value'].min(), filtered_df['Forecast_Value'].min())
     max_val = max(filtered_df['Actual_Value'].max(), filtered_df['Forecast_Value'].max())
@@ -382,6 +398,14 @@ def update_graphs(selected_country_from_dropdown, map_click_data, selected_indic
     # Add traces for historical data and forecasts
     fig.add_trace(go.Scatter(x=filtered_df['Year'], y=filtered_df['Actual_Value'], mode='markers', name='Historical'))
     fig.add_trace(go.Scatter(x=filtered_df['Year'], y=filtered_df['Forecast_Value'], mode='lines', name='Trend & Forecast'))
+
+    # Ajouter la ligne verticale pour marquer le début de la prévision
+    if pd.notna(last_historical_year):
+        fig.add_vline(x=last_historical_year + 0.5, line_width=2, line_dash="dash", line_color="grey",
+                      annotation_text="Forecast Start",
+                      annotation_position="top left",
+                      annotation_font_size=10,
+                      annotation_font_color="grey")
 
     # Update the graph layout
     indicator_title = selected_indicator.replace('_', ' ')
