@@ -78,15 +78,18 @@ for country in countries:
 
     models = {}
     for col in numeric_cols:
+        # We train only on data up to 2019 to avoid the COVID bias in the trend (outlier years)
         if col == 'GHG_Emissions':
             feature_cols = ['Year']
-            X_train = df_country[feature_cols]
-            y_train = df_country[col]
+            train_subset = df_country[df_country['Year'] <= 2019]
+            X_train = train_subset[feature_cols]
+            y_train = train_subset[col]
         else:
             selected_features = feature_selection_map.get(col, [])
             feature_cols = ['Year'] + selected_features
-            X_train = train_data[feature_cols]
-            y_train = train_data[col]
+            train_subset = train_data[train_data['Year'] <= 2019]
+            X_train = train_subset[feature_cols]
+            y_train = train_subset[col]
         
         model = LinearRegression()
         model.fit(X_train, y_train)
