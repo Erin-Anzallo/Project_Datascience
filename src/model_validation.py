@@ -44,13 +44,12 @@ df_predictive = df.dropna()
 # I define my feature selection strategy 
 # Based on the correlation matrix, I choose 1 or 2 relevant variables to help predict each indicator
 feature_selection_map = {
-    'Real_GDP_Per_Capita': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
+   'Real_GDP_Per_Capita': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
     'NEET_Rate': ['Unemployment_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
     'Unemployment_Rate': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
     'Income_Distribution_Ratio': ['NEET_Rate_lag1', 'Income_Share_Bottom_40_lag1'],
-    'Income_Share_Bottom_40': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
-    'Renewable_Energy_Share': ['Real_GDP_Per_Capita_lag1']
-    # I deliberately exclude GHG_Emissions because I saw it wasn't well correlated with others => I will use a simpler model for it
+    'Income_Share_Bottom_40': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'], 
+    # I deliberately exclude GHG_Emissions and Renewable_Energy_Share because I saw it wasn't well correlated with others => I will use a simpler model for it
 }
 
 # I configure the validation (Backtesting) 
@@ -87,9 +86,9 @@ for country in countries:
     for i, col in enumerate(numeric_cols):
         model = LinearRegression()
         
-        # Strategy for GHG
-        if col == 'GHG_Emissions':
-            # For GHG, I use a simple model based only on time (the year) because the other variables were not helpful
+        # Strategy for GHG and Renewable Energy
+        if col in ['GHG_Emissions', 'Renewable_Energy_Share']:
+            # For GHG and Renewable Energy, I use a simple model based only on time (the year) because the other variables were not helpful
             feature_cols = ['Year']
             # For this simple model, I don't need the lagged data
             train_simple = df[df['Country'] == country][df['Year'] <= CUTOFF_YEAR]

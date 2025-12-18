@@ -43,8 +43,7 @@ feature_selection_map = {
     'NEET_Rate': ['Unemployment_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
     'Unemployment_Rate': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
     'Income_Distribution_Ratio': ['NEET_Rate_lag1', 'Income_Share_Bottom_40_lag1'],
-    'Income_Share_Bottom_40': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
-    'Renewable_Energy_Share': ['Real_GDP_Per_Capita_lag1']
+    'Income_Share_Bottom_40': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'],    
 }
 
 # 5: I start the forecasting process 
@@ -79,7 +78,7 @@ for country in countries:
     models = {}
     for col in numeric_cols:
         # We train only on data up to 2019 to avoid the COVID bias in the trend (outlier years)
-        if col == 'GHG_Emissions':
+        if col in ['GHG_Emissions', 'Renewable_Energy_Share']:
             feature_cols = ['Year']
             train_subset = df_country[df_country['Year'] <= 2019]
             X_train = train_subset[feature_cols]
@@ -132,7 +131,7 @@ for country in countries:
         # I create a full trend line from 2005 to 2030
         # First, I get the model's fit on the historical data
         model_info = models[col]
-        if col == 'GHG_Emissions':
+        if col in ['GHG_Emissions', 'Renewable_Energy_Share']:
             historical_fit_input = df_country[model_info['features']]
         else:
             historical_fit_input = train_data[model_info['features']]
@@ -170,7 +169,7 @@ for country in countries:
     full_trend_df = pd.DataFrame()
     for col in numeric_cols:
         model_info = models[col]
-        historical_fit_input = df_country[model_info['features']] if col == 'GHG_Emissions' else train_data[model_info['features']]
+        historical_fit_input = df_country[model_info['features']] if col in ['GHG_Emissions', 'Renewable_Energy_Share'] else train_data[model_info['features']]
         historical_fit = model_info['model'].predict(historical_fit_input)
         full_trend = np.concatenate([historical_fit, forecast_df[col].iloc[1:].values])
         full_years = np.concatenate([historical_fit_input['Year'].values, forecast_df['Year'].iloc[1:].values])
