@@ -385,6 +385,13 @@ def update_graphs(selected_country_from_dropdown, map_click_data, selected_indic
     # Calculate Y-axis range with a 10% margin to avoid cutting off the curve
     min_val = min(filtered_df['Actual_Value'].min(), filtered_df['Forecast_Value'].min())
     max_val = max(filtered_df['Actual_Value'].max(), filtered_df['Forecast_Value'].max())
+
+    # Ensure the target value is included in the range so the red line is visible
+    target_info = TARGETS_2030.get(selected_indicator)
+    if target_info and target_info['value'] is not None:
+        min_val = min(min_val, target_info['value'])
+        max_val = max(max_val, target_info['value'])
+
     padding = (max_val - min_val) * 0.2
 
     # Create a simple figure
@@ -401,6 +408,20 @@ def update_graphs(selected_country_from_dropdown, map_click_data, selected_indic
                       annotation_position="top left",
                       annotation_font_size=10,
                       annotation_font_color="grey")
+
+    # Add target line if defined
+    target_info = TARGETS_2030.get(selected_indicator)
+    if target_info and target_info['value'] is not None:
+        target_val = target_info['value']
+        fig.add_hline(
+            y=target_val, 
+            line_dash="dot", 
+            line_color="red", 
+            line_width=2,
+            annotation_text=f"Target 2030: {target_val}",
+            annotation_position="top right",
+            annotation_font_color="red"
+        )
 
     # Update the graph layout
     indicator_title = selected_indicator.replace('_', ' ')
