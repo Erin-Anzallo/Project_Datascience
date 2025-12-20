@@ -48,23 +48,23 @@ TARGETS_2030 = {
 # 2. DASH APPLICATION INITIALIZATION 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.ZEPHYR])
-app.title = "Socio-Economic Forecasts 2030"
+app.title = "2030 SDG Monitor: Sustainability Trends & Forecasts"
 
 # 3. LAYOUT DEFINITION 
 
 app.layout = dbc.Container(fluid=True, className="p-4", children=[
     # Main Title
     html.H1(
-        children='Socio-Economic Forecasts Dashboard for 2030',
+        children='2030 SDG Monitor: Sustainability Trends & Forecasts',
         className="text-center mb-4 text-primary"
     ),
 
     # SDG Descriptions
     dbc.Card(
         dbc.CardBody([
-            html.P("This dashboard provides forecasts up to 2030 for key socio-economic indicators related to three United Nations Sustainable Development Goals (SDGs):", className="text-center"),
+            html.P("Explore forecasts up to 2030 for key sustainability indicators across three UN Sustainable Development Goals (SDGs):", className="text-center"),
             dbc.Row([
-                dbc.Col(html.Div(" SDG 8: Promote sustained, inclusive and sustainable economic growth, full and productive employment and decent work for all.", className="text-center")),
+                dbc.Col(html.Div(" SDG 8: Promote inclusive growth, productive employment, and decent work for all.", className="text-center")),
                 dbc.Col(html.Div(" SDG 10: Reduce inequality within and among countries.", className="text-center")),
                 dbc.Col(html.Div(" SDG 13: Take urgent action to combat climate change and its impacts.", className="text-center")),
             ], className="mt-3"),
