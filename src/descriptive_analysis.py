@@ -27,13 +27,10 @@ numeric_cols = [col for col in df.columns if col not in ['Country', 'Year']]
 
 
 # 2. DESCRIPTIVE STATISTICS
-
 print("\nDescriptive Statistics :")
 print(df[numeric_cols].describe().T)
 
-
 # 3. EVOLUTION & CONVERGENCE TABLE (MEAN + STD DEV)
-
 print("\nComputing Evolution Table :")
 
 start_year = df['Year'].min()
@@ -54,7 +51,7 @@ stats_end.columns = [f'Mean {end_year} ({n_countries_end} countries)', f'Std {en
 # Combine into a single DataFrame
 summary = pd.concat([stats_start, stats_end], axis=1)
 
-# Calculate Evolution of the Mean (%)
+# Calculate evolution of the mean (%)
 summary['Mean Change (%)'] = ((summary[f'Mean {end_year} ({n_countries_end} countries)'] - summary[f'Mean {start_year} ({n_countries_start} countries)']) / summary[f'Mean {start_year} ({n_countries_start} countries)']) * 100
 
 # Reorder columns for better readability
@@ -90,8 +87,7 @@ print("Image saved: evolution_table_detailed.png")
 
 
 # 4. TREND CHARTS BY SDG
-
-print("\nGenerating Charts by SDG :")
+print("\nGenerating charts by SDG :")
 
 # aggregate data by year to get the European average
 # standard deviation to visualize the disparity between countries
@@ -119,11 +115,11 @@ def plot_indicators(indicators, title, filename):
         ax = axes[i]
         color = colors[i % len(colors)]
         
-        # 1. Plot the Mean Line 
+        # 1. Plot the mean line 
         sns.lineplot(data=annual_means, x=annual_means.index, y=col, ax=ax, 
                      color=color, linewidth=3, marker='o')
         
-        # 2. Plot the Standard Deviation 
+        # 2. Plot the standard deviation 
         # The shaded area shows how spread out the countries are around the mean
         ax.fill_between(annual_means.index, 
                         annual_means[col] - annual_std[col], 
@@ -162,8 +158,7 @@ plot_indicators(indicators_sdg13, "SDG 13: Climate Action", "evolution_sdg13.png
 
 print("\nGenerating Correlation Matrix :")
 
-# Create a heatmap to identify relationships between different goals 
-# For example: Does economic growth (GDP) naturally reduce unemployment? Or does it increase emissions? 
+# Create a heatmap to identify relationships between different goals  
 
 plt.figure(figsize=(10, 8))
 
