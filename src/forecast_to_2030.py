@@ -1,3 +1,4 @@
+# Import the necessary tools
 import pandas as pd
 import numpy as np
 import os
@@ -7,17 +8,17 @@ import seaborn as sns
 import matplotlib.lines as mlines
 import warnings
 
-# 1: I import the necessary tools 
+# Ignore warnings to keep the output clean (e.g. FutureWarning from libraries)
 warnings.filterwarnings("ignore")
 
 # Path configuration 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(script_dir)
 
-# I set a nice visual style for all my plots
+# Set a nice visual style for all my plots
 sns.set_theme(style="whitegrid")
 
-# 2: I load the data 
+# Load the data 
 file_path = os.path.join(project_root, "data", "Final_Cleaned_Database.csv")
 try:
     df = pd.read_csv(file_path)
@@ -26,7 +27,7 @@ except FileNotFoundError:
     print(f"Error: File not found at {file_path}")
     exit()
 
-# 3: I define the 2030 EU Targets and my color-coded logic 
+# Define the 2030 EU Targets and my color-coded logic 
 targets_2030 = {
     'Real_GDP_Per_Capita': {'value': None, 'goal': 'higher_is_better'},
     'NEET_Rate': {'value': 9.0, 'goal': 'lower_is_better'},
@@ -34,10 +35,10 @@ targets_2030 = {
     'Income_Distribution_Ratio': {'value': None, 'goal': 'lower_is_better'},
     'Income_Share_Bottom_40': {'value': None, 'goal': 'higher_is_better'},
     'Renewable_Energy_Share': {'value': 42.5, 'goal': 'higher_is_better'},
-    'GHG_Emissions': {'value': None, 'goal': 'lower_is_better'} # Relative target, we'll check the trend
+    'GHG_Emissions': {'value': None, 'goal': 'lower_is_better'} 
 }
 
-# 4: I define the feature selection map for my hybrid model 
+# Define the feature selection map for my model 
 feature_selection_map = {
     'Real_GDP_Per_Capita': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
     'NEET_Rate': ['Unemployment_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
@@ -46,7 +47,7 @@ feature_selection_map = {
     'Income_Share_Bottom_40': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'],    
 }
 
-# 5: I start the forecasting process 
+# Start the forecasting process 
 print("\nStarting forecast to 2030 for all countries...")
 all_forecasts = []
 all_graph_data = [] # I create a list to store all the data points for the graphs
@@ -77,7 +78,7 @@ for country in countries:
 
     models = {}
     for col in numeric_cols:
-        # We train only on data up to 2019 to avoid the COVID bias in the trend (outlier years)
+        # We train only on data up to 2019 to avoid the COVID bias in the trend 
         if col in ['GHG_Emissions', 'Renewable_Energy_Share']:
             feature_cols = ['Year']
             train_subset = df_country[df_country['Year'] <= 2019]
@@ -116,7 +117,7 @@ for country in countries:
             
         forecast_df = pd.concat([forecast_df, pd.DataFrame([new_prediction])], ignore_index=True)
 
-    # I generate a graph for this country's forecast 
+    # Generate a graph for this country's forecast 
     fig, axes = plt.subplots(2, 4, figsize=(20, 10))
     fig.suptitle(f"2030 Forecast for {country}", fontsize=16, weight='bold', y=0.98)
     axes_flat = axes.flatten()
@@ -124,10 +125,10 @@ for country in countries:
     for i, col in enumerate(numeric_cols):
         ax = axes_flat[i]
         
-        # 1. I plot the historical data
+        # 1. Plot the historical data
         sns.scatterplot(data=df_country, x='Year', y=col, ax=ax, color='black', label='Historical Data')
         
-        # 2. I plot the forecasted trend line
+        # 2. Plot the forecasted trend line
         # I create a full trend line from 2005 to 2030
         # First, I get the model's fit on the historical data
         model_info = models[col]
@@ -152,16 +153,16 @@ for country in countries:
         ax.set_ylabel('')
         ax.legend()
 
-    # I remove the empty subplot
+    # Remove the empty subplot
     fig.delaxes(axes_flat[-1])
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     
-    # I save the chart
+    # Save the chart
     filename = f"{graph_output_dir}/{country}_forecast_trends.png"
     plt.savefig(filename, dpi=150)
     plt.close(fig)
 
-    # I prepare the data for the graph data export 
+    # Prepare the data for the graph data export 
     # I merge the historical data with the full forecast data
     historical_data_long = df_country.melt(id_vars=['Country', 'Year'], value_vars=numeric_cols, var_name='Indicator', value_name='Actual_Value')
     
@@ -209,7 +210,7 @@ for country in countries:
                 
                 status = 'Orange' if is_improving else 'Red'
         
-        else: # Case for trend-based goals (GDP, S80/S20, etc.)
+        else: # Case for trend-based goals (GDP, S80/S20 etc.)
             if col == 'Real_GDP_Per_Capita':
                 # For GDP, I use a specific growth-based logic
                 growth_pct = ((forecast_value - last_value) / last_value) * 100
@@ -237,7 +238,7 @@ for country in countries:
             'Status': status
         })
 
-# 6: I display the final results in a clean table 
+# Display the final results in a clean table 
 results_df = pd.DataFrame(all_forecasts)
 
 pivot_df = results_df.pivot(index='Country', columns='Indicator', values='Forecast (2030)')[numeric_cols]
@@ -255,7 +256,7 @@ os.makedirs(output_dir, exist_ok=True)
 pivot_df.round(2).to_csv(os.path.join(output_dir, "forecast_2030_values.csv"))
 status_df.to_csv(os.path.join(output_dir, "forecast_2030_status.csv"))
 
-# I combine and save the graph data from all countries into one file
+# Combine and save the graph data from all countries into one file
 final_graph_data_df = pd.concat(all_graph_data, ignore_index=True)
 final_graph_data_df.to_csv(os.path.join(output_dir, "graph_forecast_data.csv"), index=False)
 
