@@ -1,10 +1,10 @@
+# Import the necessary tools
 import pandas as pd
 import plotly.graph_objects as go
 from dash import Dash, dcc, html, Input, Output
 import os
 import dash_bootstrap_components as dbc
 
-# 1. CONFIGURATION AND DATA LOADING 
 
 # Path configuration
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -45,21 +45,21 @@ TARGETS_2030 = {
     'GHG_Emissions': {'value': None, 'goal': 'lower_is_better'}
 }
 
-# 2. DASH APPLICATION INITIALIZATION 
+# Dash application initialization 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.ZEPHYR])
 app.title = "2030 SDG Monitor: Sustainability Trends & Forecasts"
 
-# 3. LAYOUT DEFINITION 
+# Layout definition  
 
 app.layout = dbc.Container(fluid=True, className="p-4", children=[
-    # Main Title
+    # Main title
     html.H1(
         children='2030 SDG Monitor: Sustainability Trends & Forecasts',
         className="text-center mb-4 text-primary"
     ),
 
-    # SDG Descriptions
+    # SDG descriptions
     dbc.Card(
         dbc.CardBody([
             html.P("Explore forecasts up to 2030 for key sustainability indicators across three UN Sustainable Development Goals (SDGs):", className="text-center"),
@@ -73,7 +73,7 @@ app.layout = dbc.Container(fluid=True, className="p-4", children=[
 
     html.Hr(),
 
-    # Main Section with Side-by-Side Map and Graph 
+    # Main section with side-by-side map and graph 
     dbc.Row([
         # Left column for the map
         dbc.Col([
@@ -121,7 +121,7 @@ app.layout = dbc.Container(fluid=True, className="p-4", children=[
     ])
 ])
 
-# 4. INTERACTIVITY DEFINITION (CALLBACKS) 
+# Interactivity definition 
 
 @app.callback(
     [Output('map-column', 'width'),
@@ -130,11 +130,11 @@ app.layout = dbc.Container(fluid=True, className="p-4", children=[
      Input('map-indicator-dropdown', 'value')]
 )
 def toggle_graph_view(clickData, selected_indicator):
-    """Shows or hides the graph and adjusts the layout."""
+    #Shows or hides the graph and adjusts the layout
     # If no indicator is selected, always hide the graph
     if selected_indicator is None:
         return 12, {'display': 'none'}
-    # If an indicator is selected AND a country is clicked, show the graph
+    # If an indicator is selected and a country is clicked, show the graph
     if clickData is not None:
         return 7, {'display': 'block', 'height': '100%'}
     # Otherwise (indicator selected but no click), keep graph hidden
@@ -145,7 +145,7 @@ def toggle_graph_view(clickData, selected_indicator):
     Input('sdg-dropdown', 'value')
 )
 def set_indicator_options(selected_sdg):
-    """Updates indicator menu options based on the selected SDG."""
+    #Updates indicator menu options based on the selected SDG
     if not selected_sdg:
         return []
     # Only propose indicators that exist in the DataFrame
@@ -159,7 +159,7 @@ def set_indicator_options(selected_sdg):
     Input('map-indicator-dropdown', 'value')
 )
 def update_map(selected_indicator):
-    """Updates the choropleth map based on the selected indicator."""
+    # Updates the choropleth map based on the selected indicator
     # If no indicator is selected (on startup), do nothing
     if selected_indicator is None:
         # Display a blank map with a prompt
@@ -185,7 +185,7 @@ def update_map(selected_indicator):
     # Filter data for the year 2030 and the chosen indicator
     df_2030 = df[(df['Year'] == 2030) & (df['Indicator'] == selected_indicator)]
 
-    # ERROR HANDLING 
+    # Error handling
     # If the dataframe is empty (no data for this indicator), return an empty figure
     if df_2030.empty:
         # Do not modify the map if data is not ready
@@ -238,7 +238,7 @@ def update_map(selected_indicator):
             else: # Other trend indicators
                 is_good_trend = (target_info['goal'] == 'lower_is_better' and forecast_value < last_value) or \
                                 (target_info['goal'] == 'higher_is_better' and forecast_value > last_value)
-                return 0 if is_good_trend else 2 # Green or Red (no Orange for these cases)
+                return 0 if is_good_trend else 2 # Green or red (no orange for these cases)
 
     df_2030['Category'] = df_2030.apply(get_status_category, axis=1)
 
@@ -248,14 +248,14 @@ def update_map(selected_indicator):
     
     # Define legend labels based on indicator logic
     if target_info['value'] is not None:
-        legend_labels = [f"🟢 Target Met (≤ {target_info['value']})" if target_info['goal'] == 'lower_is_better' else f"🟢 Target Met (≥ {target_info['value']})", "🟠 Improving Trend", "🔴 Worsening Trend"]
+        legend_labels = [f"🟩 Target Met (≤ {target_info['value']})" if target_info['goal'] == 'lower_is_better' else f"🟩 Target Met (≥ {target_info['value']})", "🟧 Improving Trend", "🟥 Worsening Trend"]
     elif selected_indicator == 'Real_GDP_Per_Capita':
-        legend_labels = ["🟢 High Growth (>10%)", "🟠 Medium Growth (5-10%)", "🔴 Stagnation (<5%)"]
+        legend_labels = ["🟩 High Growth (>10%)", "🟧 Medium Growth (5-10%)", "🟥 Stagnation (<5%)"]
     else:
-        legend_labels = ["🟢 Good Trend", "🟠 Neutral", "🔴 Bad Trend"]
+        legend_labels = ["🟩 Good Trend", "🟧 Neutral", "🟥 Bad Trend"]
         # For 2-state indicators, show only relevant legends
         if df_2030['Category'].nunique() < 3:
-            legend_labels = [legend_labels[0], legend_labels[2]] # Keep "🟢 Good Trend" and "🔴 Bad Trend"
+            legend_labels = [legend_labels[0], legend_labels[2]] # Keep "Good Trend" and "Bad Trend"
             colors = ['green', 'red']
 
     # Map creation with a single trace
@@ -295,7 +295,7 @@ def update_map(selected_indicator):
     Input('map-indicator-dropdown', 'value')
 )
 def update_legend(selected_indicator):
-    """Updates the HTML legend below the map."""
+    #Updates the HTML legend below the map
     if not selected_indicator:
         return []
 
@@ -335,7 +335,7 @@ def update_legend(selected_indicator):
     prevent_initial_call=True
 )
 def update_dropdown_from_map(clickData):
-    """Updates the dropdown menu when a country is clicked on the map."""
+    #Updates the dropdown menu when a country is clicked on the map.
     if clickData is None:
         # Do nothing if no click has occurred
         from dash import no_update
@@ -368,14 +368,14 @@ def update_graphs(selected_country_from_dropdown, map_click_data, selected_indic
         else:
             selected_country = selected_country_from_dropdown
 
-    # If no country or indicator is selected, return an empty figure.
+    # If no country or indicator is selected, return an empty figure
     if not selected_country or not selected_indicator:
         return go.Figure(layout={"title": "Please select a country"})
 
     # Filter the DataFrame for the selected country and indicator
     filtered_df = df[(df['Country'] == selected_country) & (df['Indicator'] == selected_indicator)]
 
-    # If the filtered dataframe is empty, return an empty figure.
+    # If the filtered dataframe is empty, return an empty figure
     if filtered_df.empty:
         return go.Figure(layout={"title": f"No data available for {selected_indicator} in {selected_country}"})
 
@@ -448,7 +448,6 @@ def update_graphs(selected_country_from_dropdown, map_click_data, selected_indic
 
     return fig
 
-# 5. APP LAUNCH 
-
+# App launch 
 if __name__ == '__main__':
     app.run(debug=True)
