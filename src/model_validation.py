@@ -1,4 +1,4 @@
-# I import the necessary tools 
+# Import the necessary tools 
 import pandas as pd
 import numpy as np
 import os
@@ -16,7 +16,7 @@ sns.set_theme(style="whitegrid")
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(script_dir)
 
-# I load the data 
+# load data 
 file_path = os.path.join(project_root, "data", "Final_Cleaned_Database.csv")
 
 try:
@@ -26,11 +26,8 @@ except FileNotFoundError:
     print(f"Error: File not found at {file_path}")
     exit()
 
-# I select numeric columns for analysis
+# Select numeric columns for analysis
 numeric_cols = [col for col in df.columns if col not in ['Country', 'Year']]
-
-# I prepare the data for an "honest" prediction 
-# To predict year T, I must only use data from the past (T-1, T-2, etc.)
 
 # I create new "_lag1" columns that contain the value from the previous year
 # For example, the row for 2010 will have a "GDP_lag1" column with the GDP value from 2009
@@ -42,7 +39,7 @@ df[lagged_cols] = df.groupby('Country')[numeric_cols].shift(1)
 df_predictive = df.dropna()
 
 # I define my feature selection strategy 
-# Based on the correlation matrix, I choose 1 or 2 relevant variables to help predict each indicator
+# Based on the correlation matrix, I choose 2 relevant variables to help predict each indicator
 feature_selection_map = {
    'Real_GDP_Per_Capita': ['NEET_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
     'NEET_Rate': ['Unemployment_Rate_lag1', 'Income_Distribution_Ratio_lag1'],
@@ -52,22 +49,22 @@ feature_selection_map = {
     # I deliberately exclude GHG_Emissions and Renewable_Energy_Share because I saw it wasn't well correlated with others => I will use a simpler model for it
 }
 
-# I configure the validation (Backtesting) 
+# Configure the validation (Backtesting) 
 # I define the cutoff year => everything before is for training, everything after is for testing
 CUTOFF_YEAR = 2019 
 
-print("\nStarting Hybrid Linear Regression Validation (Backtesting)")
+print("\nStarting Linear Regression Validation (Backtesting)")
 print(f"Training Period: 2005 - {CUTOFF_YEAR}")
 print(f"Testing Period: {CUTOFF_YEAR + 1} - 2022")
 
-# I create a directory to save the charts
+# Directory to save the charts
 output_dir = os.path.join(project_root, "results", "model_validation_plot")
 os.makedirs(output_dir, exist_ok=True)
 print(f"Output directory '{output_dir}' created")
 
 results = []
 
-# I start the validation loop, country by country 
+# Start the validation loop, country by country 
 countries = df_predictive['Country'].unique()
 print(f"Processing validation for {len(countries)} countries...")
 
@@ -115,7 +112,7 @@ for country in countries:
             X_test = test[feature_cols]
             y_real = test[col]
             
-            # I prepare the data to plot the prediction curve over the whole period
+            # Prepare the data to plot the prediction curve over the whole period
             X_full = df_country_pred[feature_cols]
 
         # Training and Prediction :
@@ -125,17 +122,17 @@ for country in countries:
         y_pred = model.predict(X_test)
         y_pred_full = model.predict(X_full)
         
-        # I calculate the Mean Absolute Error (MAE) between the prediction and reality
+        # Calculate the Mean Absolute Error (MAE) between the prediction and reality
         mae = mean_absolute_error(y_real, y_pred)
         results.append({'Country': country, 'Indicator': col, 'MAE': mae})
         
         # Visualization 
         ax = axes_flat[i]
-        # I display the real data (black dots)
+        # Display the real data (black dots)
         sns.scatterplot(data=df[df['Country'] == country], x='Year', y=col, ax=ax, color='black', s=40)
-        # I draw the model's prediction curve (in orange)
+        # Draw the model's prediction curve (in orange)
         ax.plot(X_full['Year'], y_pred_full, color='orange', linestyle='--', linewidth=2)
-        # I add a vertical line to mark the separation between training and testing
+        # Add a vertical line to mark the separation between training and testing
         ax.axvline(x=CUTOFF_YEAR, color='gray', linestyle=':')
         ax.set_title(f"{col}\nMAE: {mae:.2f}", fontsize=10)
         ax.set_xlabel('')
@@ -161,11 +158,11 @@ for country in countries:
 
 print("Validation charts generation completed")
 
-# Global Error Analysis :
+# Global error analysis :
 df_res = pd.DataFrame(results)
 print("\nGlobal Validation Results (Mean Absolute Error) - Hybrid Model")
 
-# I calculate the average error for each indicator, across all countries
+# Calculate the average error for each indicator, across all countries
 summary_errors = df_res.groupby('Indicator')['MAE'].mean().sort_values().reset_index()
 summary_errors.columns = ['Indicator', 'Average Error (MAE)']
 
