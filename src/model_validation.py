@@ -61,7 +61,7 @@ print(f"Training Period: 2005 - {CUTOFF_YEAR}")
 print(f"Testing Period: {CUTOFF_YEAR + 1} - 2022")
 
 # I create a directory to save the charts
-output_dir = os.path.join(project_root, "results", "final_model_validation_plot")
+output_dir = os.path.join(project_root, "results", "model_validation_plot")
 os.makedirs(output_dir, exist_ok=True)
 print(f"Output directory '{output_dir}' created")
 
@@ -80,7 +80,7 @@ for country in countries:
         continue
 
     fig, axes = plt.subplots(2, 4, figsize=(20, 10))
-    fig.suptitle(f"Final Model Validation: {country}", fontsize=16, weight='bold', y=0.98)
+    fig.suptitle(f"Model Validation: {country}", fontsize=16, weight='bold', y=0.98)
     axes_flat = axes.flatten() 
 
     for i, col in enumerate(numeric_cols):
@@ -155,7 +155,7 @@ for country in countries:
     
     plt.tight_layout(rect=[0, 0.03, 1, 0.90])
     
-    filename = f"{output_dir}/{country}_final_validation.png"
+    filename = f"{output_dir}/{country}_validation.png"
     plt.savefig(filename, dpi=150)
     plt.close()
 
@@ -163,7 +163,7 @@ print("Validation charts generation completed")
 
 # Global Error Analysis :
 df_res = pd.DataFrame(results)
-print("\nGlobal Validation Results (Mean Absolute Error) - Final Hybrid Model")
+print("\nGlobal Validation Results (Mean Absolute Error) - Hybrid Model")
 
 # I calculate the average error for each indicator, across all countries
 summary_errors = df_res.groupby('Indicator')['MAE'].mean().sort_values().reset_index()
@@ -206,8 +206,8 @@ table.auto_set_font_size(False)
 table.set_fontsize(12)
 table.scale(1.2, 1.8) 
 
-plt.title("Global Final Model Validation Results (Mean Absolute Error)", fontsize=14, weight='bold')
+plt.title("Global Model Validation Results (Mean Absolute Error)", fontsize=14, weight='bold')
 
-filename_table = f"{output_dir}/validation_errors_final_table.png"
+filename_table = f"{output_dir}/validation_errors_table.png"
 plt.savefig(filename_table, bbox_inches='tight', dpi=300)
 print(f"Image saved: {filename_table}")
