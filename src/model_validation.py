@@ -146,7 +146,7 @@ for country in countries:
 
     legend_elements = [
         mlines.Line2D([], [], color='black', marker='o', linestyle='None', markersize=6, label='Real Data'),
-        mlines.Line2D([], [], color='orange', linestyle='--', linewidth=2, label='Hybrid Model Prediction'),
+        mlines.Line2D([], [], color='orange', linestyle='--', linewidth=2, label='Model Prediction'),
         mlines.Line2D([], [], color='gray', linestyle=':', linewidth=1.5, label='Training Cutoff (2019)')
     ]
 
