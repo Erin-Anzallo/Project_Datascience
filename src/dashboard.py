@@ -8,11 +8,8 @@ import dash_bootstrap_components as dbc
 
 # Path configuration
 script_dir = os.path.dirname(os.path.abspath(__file__))
-# We assume the 'results' folder is in the same directory as this script.
-# The script directory is therefore the project root.
-project_root = script_dir
-data_path = os.path.join(project_root, "results", "forecast_2030", "graph_forecast_data.csv")
 
+data_path = "results/forecast_2030/graph_forecast_data.csv"
 # Load data
 try:
     df = pd.read_csv(data_path)
