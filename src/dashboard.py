@@ -193,16 +193,6 @@ def update_map(selected_indicator):
         return fig
 
     # classification
-    targets_2030 = {
-        'Real_GDP_Per_Capita': {'value': None, 'goal': 'higher_is_better'},
-        'NEET_Rate': {'value': 9.0, 'goal': 'lower_is_better'},
-        'Unemployment_Rate': {'value': 5.0, 'goal': 'lower_is_better'},
-        'Income_Distribution_Ratio': {'value': None, 'goal': 'lower_is_better'},
-        'Income_Share_Bottom_40': {'value': None, 'goal': 'higher_is_better'},
-        'Renewable_Energy_Share': {'value': 42.5, 'goal': 'higher_is_better'},
-        'GHG_Emissions': {'value': None, 'goal': 'lower_is_better'}
-    }
-
     def get_status_category(row):
         indicator = row['Indicator']
         forecast_value = row['Forecast_Value']
@@ -229,31 +219,18 @@ def update_map(selected_indicator):
         else:
             if indicator == 'Real_GDP_Per_Capita':
                 growth_pct = ((forecast_value - last_value) / last_value) * 100 if last_value != 0 else 0
-                if growth_pct > 10: return 0 # Green
-                elif growth_pct >= 5: return 1 # Orange
-                else: return 2 # Red
+                if growth_pct > 10:
+                    return 0 # Green
+                elif growth_pct >= 5:
+                    return 1 # Orange
+                else:
+                    return 2 # Red
             else: # Other trend indicators
                 is_good_trend = (target_info['goal'] == 'lower_is_better' and forecast_value < last_value) or \
                                 (target_info['goal'] == 'higher_is_better' and forecast_value > last_value)
                 return 0 if is_good_trend else 2 # Green or red (no orange for these cases)
 
     df_2030['Category'] = df_2030.apply(get_status_category, axis=1)
-
-    # Define colors and legend labels
-    colors = ['green', 'orange', 'red']
-    target_info = TARGETS_2030[selected_indicator]
-    
-    # Define legend labels based on indicator logic
-    if target_info['value'] is not None:
-        legend_labels = [f"🟩 Target Met (≤ {target_info['value']})" if target_info['goal'] == 'lower_is_better' else f"🟩 Target Met (≥ {target_info['value']})", "🟧 Improving Trend", "🟥 Worsening Trend"]
-    elif selected_indicator == 'Real_GDP_Per_Capita':
-        legend_labels = ["🟩 High Growth (>10%)", "🟧 Medium Growth (5-10%)", "🟥 Stagnation (<5%)"]
-    else:
-        legend_labels = ["🟩 Good Trend", "🟧 Neutral", "🟥 Bad Trend"]
-        # For 2-state indicators, show only relevant legends
-        if df_2030['Category'].nunique() < 3:
-            legend_labels = [legend_labels[0], legend_labels[2]] # Keep "Good Trend" and "Bad Trend"
-            colors = ['green', 'red']
 
     # Map creation with a single trace
     fig = go.Figure(go.Choropleth(
@@ -349,9 +326,9 @@ def update_dropdown_from_map(clickData):
      Input('map-indicator-dropdown', 'value')]
 )
 def update_graphs(selected_country_from_dropdown, map_click_data, selected_indicator):
-    """
-    Updates the trend graph for the selected country and indicator.
-    """
+    
+    # Updates the trend graph for the selected country and indicator.
+    
     from dash import callback_context
 
     # Determine which input triggered the callback

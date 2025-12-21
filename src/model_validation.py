@@ -7,7 +7,6 @@ from sklearn.metrics import mean_absolute_error
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.lines as mlines  
-import warnings
 
 # I set the visual style for the plots
 sns.set_theme(style="whitegrid")
@@ -24,8 +23,7 @@ try:
     print(f"Data loaded successfully. Total rows: {len(df)}")
 except FileNotFoundError:
     print(f"Error: File not found at {file_path}")
-    exit()
-
+    
 # Select numeric columns for analysis
 numeric_cols = [col for col in df.columns if col not in ['Country', 'Year']]
 
@@ -160,7 +158,7 @@ print("Validation charts generation completed")
 
 # Global error analysis :
 df_res = pd.DataFrame(results)
-print("\nGlobal Validation Results (Mean Absolute Error) - Hybrid Model")
+print("\nGlobal Validation Results (Mean Absolute Error)")
 
 # Calculate the average error for each indicator, across all countries
 summary_errors = df_res.groupby('Indicator')['MAE'].mean().sort_values().reset_index()

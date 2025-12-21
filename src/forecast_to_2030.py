@@ -1,11 +1,11 @@
 # Import the necessary tools
+import sys
 import pandas as pd
 import numpy as np
 import os
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 import seaborn as sns
-import matplotlib.lines as mlines
 import warnings
 
 # Ignore warnings to keep the output clean (e.g. FutureWarning from libraries)
@@ -25,7 +25,7 @@ try:
     print("Data loaded successfully.")
 except FileNotFoundError:
     print(f"Error: File not found at {file_path}")
-    exit()
+    sys.exit()
 
 # Define the 2030 EU Targets and my color-coded logic 
 targets_2030 = {
