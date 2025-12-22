@@ -16,7 +16,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(script_dir)
 
 # load data 
-file_path = os.path.join(project_root, "data", "Final_Cleaned_Database.csv")
+file_path = os.path.join(project_root, "data", "Final_cleaned_database.csv")
 
 try:
     df = pd.read_csv(file_path)
