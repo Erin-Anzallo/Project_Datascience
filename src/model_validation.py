@@ -86,8 +86,8 @@ for country in countries:
             # For GHG and Renewable Energy, I use a simple model based only on time (the year) because the other variables were not helpful
             feature_cols = ['Year']
             # For this simple model, I don't need the lagged data
-            train_simple = df[df['Country'] == country][df['Year'] <= CUTOFF_YEAR]
-            test_simple = df[df['Country'] == country][df['Year'] > CUTOFF_YEAR]
+            train_simple = df[(df['Country'] == country) & (df['Year'] <= CUTOFF_YEAR)]
+            test_simple = df[(df['Country'] == country) & (df['Year'] > CUTOFF_YEAR)]
             
             X_train = train_simple[feature_cols]
             y_train = train_simple[col]
@@ -148,7 +148,9 @@ for country in countries:
     fig.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, 0.94), 
                ncol=3, frameon=False, fontsize=12)
     
-    plt.tight_layout(rect=[0, 0.03, 1, 0.90])
+    # I replace tight_layout with manual adjustment to avoid hanging/freezing issues in Python 3.13
+    # plt.tight_layout(rect=[0, 0.03, 1, 0.90])
+    plt.subplots_adjust(top=0.90, bottom=0.05, left=0.05, right=0.95, hspace=0.4, wspace=0.3)
     
     filename = f"{output_dir}/{country}_validation.png"
     plt.savefig(filename, dpi=150)
