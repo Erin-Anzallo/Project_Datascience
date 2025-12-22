@@ -75,7 +75,7 @@ for country in countries:
         continue
 
     fig, axes = plt.subplots(2, 4, figsize=(20, 10))
-    fig.suptitle(f"Model Validation: {country}", fontsize=16, weight='bold', y=0.98)
+    fig.suptitle(f"Model Validation: {country}", fontsize=16, weight='bold', y=0.99)
     axes_flat = axes.flatten() 
 
     for i, col in enumerate(numeric_cols):
@@ -145,12 +145,10 @@ for country in countries:
         mlines.Line2D([], [], color='gray', linestyle=':', linewidth=1.5, label='Training Cutoff (2019)')
     ]
 
-    fig.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, 0.94), 
+    fig.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, 0.93), 
                ncol=3, frameon=False, fontsize=12)
     
-    # I replace tight_layout with manual adjustment to avoid hanging/freezing issues in Python 3.13
-    # plt.tight_layout(rect=[0, 0.03, 1, 0.90])
-    plt.subplots_adjust(top=0.90, bottom=0.05, left=0.05, right=0.95, hspace=0.4, wspace=0.3)
+    plt.subplots_adjust(top=0.85, bottom=0.05, left=0.05, right=0.95, hspace=0.4, wspace=0.3)
     
     filename = f"{output_dir}/{country}_validation.png"
     plt.savefig(filename, dpi=150)
