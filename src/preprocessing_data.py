@@ -4,10 +4,10 @@ import os
 # 1. PARAMETERS AND PATHS DEFINITION
 
 # Absolute paths provided by the user 
-PATH_SDG8 = '/Users/eanzallo/Desktop/M1/data science/Project_Datascience/data/SDG8'
-PATH_SDG10 = '/Users/eanzallo/Desktop/M1/data science/Project_Datascience/data/SDG10'
-PATH_SDG13 = '/Users/eanzallo/Desktop/M1/data science/Project_Datascience/data/SDG13'
-OUTPUT_DIR = '/Users/eanzallo/Desktop/M1/data science/Project_Datascience/data'
+PATH_SDG8 = './data/SDG8'
+PATH_SDG10 = './data/SDG10'
+PATH_SDG13 = './data/SDG13'
+OUTPUT_DIR = './data'
 output_file_name = 'Final_cleaned_database.csv' 
 
 # Target countries list 
