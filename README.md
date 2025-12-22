@@ -40,7 +40,7 @@ Project_Datascience/
 This project requires **Python 3.9+**. Install the necessary dependencies:
 
 ```bash
-pip install -R requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Usage
