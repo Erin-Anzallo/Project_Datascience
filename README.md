@@ -51,7 +51,7 @@ Clean and prepare the raw dataset for analysis.
 ```bash
 python src/preprocessing_data.py
 ```
-*Output: Generates the cleaned dataset `data/Final_Cleaned_Database.csv`.*
+*Output: Generates the cleaned dataset `data/Final_cleaned_database.csv`.*
 
 ### 2. Descriptive Analysis
 Perform exploratory data analysis to visualize historical trends.
