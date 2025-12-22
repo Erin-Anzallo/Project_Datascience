@@ -1,3 +1,4 @@
+# Import the necessary tools 
 import pandas as pd
 import os
 
@@ -30,6 +31,8 @@ file_mapping_and_paths = {
     'GHG_Emissions': ('total-ghg-emissions.csv', PATH_SDG13)
 }
 
+# I define two lists to handle different file structures (e.g. Our World in Data vs Eurostat)
+# files_structure_1 uses clean_structure_1 (Entity, Year, Value) and files_structure_2 uses clean_structure_2 (geo, TIME_PERIOD, OBS_VALUE)
 files_structure_1 = ['NEET_Rate', 'Unemployment_Rate', 'Renewable_Energy_Share', 'GHG_Emissions']
 files_structure_2 = ['Real_GDP_Per_Capita', 'Income_Distribution_Ratio', 'Income_Share_Bottom_40']
 cleaned_dfs = []
@@ -45,15 +48,19 @@ END_YEAR = 2022
 # 2. DATA CLEANING FUNCTIONS
 
 def clean_structure_1(full_file_path, var_name):
-    """Cleans files with the 'Entity, Year, Long_Value_Name' structure."""
+    #Cleans files with the 'Entity, Year, Long_Value_Name' structure.
     df = pd.read_csv(full_file_path) 
+    # Check for required columns
+    if 'Entity' not in df.columns or 'Year' not in df.columns:
+        raise KeyError(f"Missing required columns ('Entity', 'Year') in loaded file: {full_file_path}")
+    # I assume the value is always in the last column for this structure (typical of Our World in Data)
     value_col = df.columns[-1]
     df_clean = df[['Entity', 'Year', value_col]].copy()
     df_clean.rename(columns={'Entity': 'Country', 'Year': 'Year', value_col: var_name}, inplace=True)
     return df_clean
 
 def clean_structure_2(full_file_path, var_name):
-    """Cleans Eurostat files with the 'geo, TIME_PERIOD, OBS_VALUE' structure."""
+    #Cleans Eurostat files with the 'geo, TIME_PERIOD, OBS_VALUE' structure.
     df = pd.read_csv(full_file_path)
     # Check for required columns
     if 'geo' not in df.columns or 'TIME_PERIOD' not in df.columns or 'OBS_VALUE' not in df.columns:
@@ -95,8 +102,10 @@ if cleaned_dfs:
 # 4. DYNAMIC FILTERING AND FINAL SAVE
 
 # Apply dynamic start year filter
+    # I create a series of start years: specific year if in START_YEARS, else DEFAULT_START_YEAR (2005)
     start_year_series = df_merged['Country'].map(START_YEARS).fillna(DEFAULT_START_YEAR)
 
+    # I apply 3 filters: keep only target countries, keep years >= dynamic start year, and keep years <= 2022
     df_final = df_merged[
     (df_merged['Country'].isin(TARGET_COUNTRIES)) &
     (df_merged['Year'] >= start_year_series) & 

@@ -80,31 +80,40 @@ for country in countries:
     for col in numeric_cols:
         # We train only on data up to 2019 to avoid the COVID bias in the trend 
         if col in ['GHG_Emissions', 'Renewable_Energy_Share']:
+            # For environmental indicators, I use a simple time-series model (Year only)
+            # This is because these metrics are driven more by long-term policy trends than short-term economic fluctuations
             feature_cols = ['Year']
             train_subset = df_country[df_country['Year'] <= 2019]
             X_train = train_subset[feature_cols]
             y_train = train_subset[col]
         else:
+            # For socio-economic indicators, I use a model with lagged features
             selected_features = feature_selection_map.get(col, [])
             feature_cols = ['Year'] + selected_features
             train_subset = train_data[train_data['Year'] <= 2019]
             X_train = train_subset[feature_cols]
             y_train = train_subset[col]
         
+        # I initialize and train the Linear Regression model
         model = LinearRegression()
         model.fit(X_train, y_train)
         models[col] = {'model': model, 'features': feature_cols}
 
+    # I start the forecasting process from the last known real data point (2022)
     last_known_data = df_country[df_country['Year'] == 2022].to_dict('records')[0]
     forecast_df = pd.DataFrame([last_known_data])
 
+    # I iterate year by year from 2023 to 2030 because the model is recursive:
+    # To predict 2023, I need 2022 data. To predict 2024, I need the *predicted* 2023 data
     for year in range(2023, 2031):
         previous_year_data = forecast_df[forecast_df['Year'] == year - 1].iloc[0]
         new_prediction = {'Country': country, 'Year': year}
         
+        # 1. Update lagged features: I populate the lag columns with values from the previous year
         for col in numeric_cols:
             new_prediction[f'{col}_lag1'] = previous_year_data[col]
             
+        # 2. Predict: I use the trained model to predict the value for the current year
         for col in numeric_cols:
             model_info = models[col]
             input_features = pd.DataFrame([new_prediction])[model_info['features']]
