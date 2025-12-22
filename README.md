@@ -40,7 +40,7 @@ Project_Datascience/
 This project requires **Python 3.9+**. Install the necessary dependencies:
 
 ```bash
-pip install pandas numpy scikit-learn plotly dash dash-bootstrap-components matplotlib seaborn
+pip install -R requirements.txt
 ```
 
 ## Usage
