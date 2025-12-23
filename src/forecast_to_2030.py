@@ -231,6 +231,8 @@ for country in countries:
                     status = 'Red' # Stagnation
             else:
                 # For other trend-based goals, I use a simple trend direction
+                # Note: We compare the 2030 forecast strictly against the last known actual value (2022)
+                # Even if the model predicts a positive slope from 2023, if the 2030 end point is worse than the 2022 starting point, it is considered a failure (Red)
                 is_good_trend = False
                 if target_info['goal'] == 'lower_is_better' and forecast_value < last_value:
                     is_good_trend = True
