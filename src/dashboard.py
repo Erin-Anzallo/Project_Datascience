@@ -1,7 +1,7 @@
 # Import the necessary tools
 import pandas as pd
 import plotly.graph_objects as go
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output, callback_context
 import os
 import dash_bootstrap_components as dbc
 
@@ -123,19 +123,17 @@ app.layout = dbc.Container(fluid=True, className="p-4", children=[
 @app.callback(
     [Output('map-column', 'width'),
      Output('graph-column', 'style')],
-    [Input('europe-map', 'clickData'),
+    [Input('country-dropdown', 'value'),
      Input('map-indicator-dropdown', 'value')]
 )
-def toggle_graph_view(clickData, selected_indicator):
+def toggle_graph_view(selected_country, selected_indicator):
     #Shows or hides the graph and adjusts the layout
-    # If no indicator is selected, always hide the graph
-    if selected_indicator is None:
+    # Logic to handle the "Close" action:
+    # When the user clicks the 'x' in the country dropdown, selected_country becomes None
+    # This condition hides the side panel and restores the map to full screen
+    if selected_indicator is None or selected_country is None:
         return 12, {'display': 'none'}
-    # If an indicator is selected and a country is clicked, show the graph
-    if clickData is not None:
-        return 7, {'display': 'block', 'height': '100%'}
-    # Otherwise (indicator selected but no click), keep graph hidden
-    return 12, {'display': 'none'}
+    return 7, {'display': 'block', 'height': '100%'}
 
 @app.callback(
     Output('map-indicator-dropdown', 'options'),
