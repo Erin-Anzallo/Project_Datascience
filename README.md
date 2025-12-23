@@ -111,6 +111,16 @@ To address the complexity of socio-economic and environmental indicators, we dev
 | **Renewable Energy Share** | SDG 13 | ≥ 42.5% |
 | **GHG Emissions** | SDG 13 | Reduction Trend |
 
+### Visualization Logic (Color System)
+
+The dashboard uses a color-coded system to evaluate progress:
+
+*   **For Numeric Targets:** The color is determined by comparing the **2030 Forecast** directly to the fixed threshold.
+*   **For Trend Targets:** The color is determined by comparing the **2030 Forecast** to the **Last Historical Value (2022)**.
+    *   **Green:** The forecast shows an improvement relative to the 2022 baseline.
+    *   **Red:** The forecast shows a deterioration or stagnation relative to the 2022 baseline.
+    *   *Note:* Even if the trend line points in the right direction, the status remains Red if the final **2030 prediction** is not better than the **actual 2022 value**.
+
 ## Authors
 
 *   **Erin Anzallo** - *M1 Data Science Project*
