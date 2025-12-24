@@ -121,6 +121,6 @@ The dashboard uses a color-coded system to evaluate progress:
     *   **Red:** The forecast shows a deterioration or stagnation relative to the 2022 baseline.
     *   *Note:* Even if the trend line points in the right direction, the status remains Red if the final **2030 prediction** is not better than the **actual 2022 value**.
 
-## Authors
+## Author
 
 *   **Erin Anzallo** - *M1 Data Science Project*
