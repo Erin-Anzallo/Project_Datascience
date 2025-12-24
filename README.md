@@ -1,10 +1,10 @@
-# 2030 SDG Monitor: Sustainability Trends & Forecasts
+# Forecasting Europe 2030: A Machine Learning Analysis of Growth, Equality and Climate SDGs
 
 ## Project Overview
 
 The **2030 SDG Monitor** is a data science project designed to analyze, forecast and visualize the progress of European countries towards the United Nations Sustainable Development Goals (SDGs) for the year 2030.
 
-Focusing on **SDG 8 (Decent Work)**, **SDG 10 (Reduced Inequalities)**, and **SDG 13 (Climate Action)**, this project utilizes a predictive pipeline based on historical data (2005–2019) to project future trends and assess whether countries are on track to meet EU targets.
+Focusing on **SDG 8 (Decent Work)**, **SDG 10 (Reduced Inequalities)** and **SDG 13 (Climate Action)**, this project utilizes a predictive pipeline based on historical data (2005–2019) to project future trends and assess whether countries are on track to meet EU targets.
 
 ## Key Features
 
@@ -24,13 +24,13 @@ Project_Datascience/
 │   └── Final_Cleaned_Database.csv    # Historical dataset (2005-2022)
 ├── results/
 │   ├── descriptive_analysis/         # Exploratory data analysis charts
-│   ├── forecast_2030/                # Generated forecast data & static plots
+│   ├── forecast_2030/                # Generated forecast data and static plots
 │   └── model_validation_plot/        # Backtesting performance charts
 ├── src/
 │   ├── dashboard.py                  # Interactive Dash application
 │   ├── descriptive_analysis.py       # Descriptive analysis script
 │   ├── forecast_to_2030.py           # Main forecasting script
-│   ├── model_validation.py           # Backtesting & error analysis script
+│   ├── model_validation.py           # Backtesting and error analysis script
 │   └── preprocessing_data.py         # Data preprocessing script
 └── README.md
 ```
@@ -90,7 +90,7 @@ python src/dashboard.py
 To address the complexity of socio-economic and environmental indicators, we developed a **Linear Regression pipeline combining temporal trends and autoregressive dynamics**:
 
 1.  **Socio-Economic Indicators (e.g., GDP, Unemployment, Inequality):**
-    *   Modeled using **Lagged Features** (e.g., $X_{t-1}$) to capture system inertia and causal dependencies.
+    *   Modeled using **Lagged Features** (e.g., $X_{t-1}$) to capture system dynamics.
     *   *Example:* Unemployment Rate is predicted using the previous year's NEET Rate and Income Distribution.
 
 2.  **Environmental Indicators (GHG Emissions, Renewable Share):**
